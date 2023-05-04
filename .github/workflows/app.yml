@@ -34,10 +34,10 @@ jobs:
     - run: npm install --global knex
       name: "Install Knex"
     - name: Run Tests & Deploy
-      run: cd app && jake ci_test
+      run: jake ci_test
     - name: "Set NPM version"
-      run: cd app && npm version 1.0.`git rev-list --count main`
+      run: npm version 1.0.`git rev-list --count main`
     - name: "Deploy to fake NPM"
-      run: cd app && npm publish
+      run: npm publish
       env:
         NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
