@@ -1,0 +1,43 @@
+# This workflow will do a clean install of node dependencies, cache/restore them, build the source code and run tests across different versions of node
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
+
+name: Node.js CI
+
+on:
+  push:
+    branches: [ main ]
+
+env:
+  CI_RUN: "yes"
+jobs:
+  build:
+    permissions:
+      contents: read
+      packages: write
+    runs-on: ubuntu-latest
+    steps:
+    - name: Check out Files
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+    - name: Use Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: 20.x
+        registry-url: 'https://npm.pkg.github.com'
+    - run: cd app && npm ci
+      name: "Install API"
+      env:
+        NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - run: npm install --global jake
+      name: "Install Jake"
+    - run: npm install --global knex
+      name: "Install Knex"
+    - name: Run Tests & Deploy
+      run: cd app && jake ci_test
+    - name: "Set NPM version"
+      run: cd app && npm version 1.0.`git rev-list --count main`
+    - name: "Deploy to fake NPM"
+      run: cd app && npm publish
+      env:
+        NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -71,10 +71,6 @@ async function connectAndSetup({postgresConnectionString, retries = 5}){
     await sqlDatabase.destroy();
     sqlDatabase = await connect(postgresConnectionString);
 
-    // now that we're sure the database exists, go run migrations
-    console.log(`\trunning migrations...`);
-    await run("npx knex migrate:latest", {env: {POSTGRES_URL: postgresConnectionString}});
-
     return sqlDatabase;
 }
 

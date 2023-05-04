@@ -1,6 +1,5 @@
 let { task, desc } = require('jake');
 let { run, runBg, pipe } = require('@cube-drone/rundmc');
-let { connectAndSetup } = require('./database-setup.js');
 
 desc("List all tools & options.")
 task('default', async () => {
@@ -8,7 +7,11 @@ task('default', async () => {
 });
 
 const setup = async () => {
-    await connectAndSetup({
+    let {setup} = require('./index')
+    await setup({
+        nodeEnv: process.env.NODE_ENV || "development",
+        redisUrl: process.env.TEMPL8_REDIS_URL || process.env.REDIS_URL ||
+            "redis://localhost:6379",
         postgresConnectionString: process.env.TEMPL8_POSTGRES_URL || process.env.POSTGRES_URL ||
             "postgres://postgres:example@localhost:5432/templ8",
     })
@@ -20,7 +23,7 @@ task('setup', setup)
 const start = async () => {
     await run("docker-compose up -d")
     await setup()
-    await run("nodemon index.js")
+    await run("nodemon run.js")
 }
 desc("Boot up the server.")
 task('start', start)
@@ -33,6 +36,11 @@ task('clean', async () => {
 desc("load local secrets")
 task('secrets', async () => {
     console.log("run 'source .secrets.sh' to load local secrets")
+})
+
+desc("run tests")
+task('test', async () => {
+    await run('npx mocha')
 })
 
 const cleanTest = async () => {

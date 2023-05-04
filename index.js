@@ -1,5 +1,6 @@
 const express = require('express')
-require('express-async-errors'); // this patches better async error handling into express
+const crypto = require('crypto')
+require('express-async-errors') // this patches better async error handling into express
 const app = express()
 const bodyParser = require('body-parser')
 const cookieParser = require('cookie-parser')
@@ -11,16 +12,8 @@ const { Redis } = require("ioredis")
 const jsonParser = bodyParser.json()
 const urlencodedParser = bodyParser.urlencoded({ extended: false })
 
-const nodeEnv = process.env.NODE_ENV || "development";
-const envPort = process.env.TEMPL8_PORT || 9393;
-const cookieSecret = process.env.TEMPL8_SECRET || "toots ahoy";
-const redisUrl = process.env.TEMPL8_REDIS_URL || process.env.REDIS_URL || 
-    "redis://localhost:6379";
-const postgresConnectionString = process.env.TEMPL8_POSTGRES_URL || process.env.POSTGRES_URL || 
-    "postgres://postgres:example@localhost:15432/authome";
-
 //--------------------------
-async function main(){
+async function main({nodeEnv, envPort, cookieSecret, redisUrl, postgresConnectionString}){
     app.use(cookieParser(cookieSecret))
 
     // we are going to deploy this behind nginx
@@ -59,6 +52,11 @@ async function main(){
         let pong = await redis.get("ponk")
         assert.strictEqual(pong, "toots ahoy")
 
+        let record = await sqlDatabase('table_1').insert({
+            id: crypto.randomUUID(),
+            name: "toots ahoy"
+        })
+        console.warn(record);
         res.send(":)")
     })
 
@@ -66,7 +64,29 @@ async function main(){
     console.log(`Listening on port ${envPort}...`)
 }
 
-main().catch((err) => {
-    console.error(err)
-    process.exit(1)
-})
+async function setup({nodeEnv, envPort, redisUrl, postgresConnectionString}){
+    /*
+        this is run once, during a deploy
+    */
+    const redis = new Redis(redisUrl);
+
+    let lock = await redis.set("setup-lock", "1", "NX", "EX", 30)
+    if(!lock){
+        return;
+    }
+
+    let {connectAndSetup} = require('./database-setup')
+    let sqlDatabase = await connectAndSetup({postgresConnectionString})
+
+    console.log(`\trunning migrations...`);
+    await sqlDatabase.migrate.latest({
+        directory: './migrations',
+    })
+    let currentVersion = await sqlDatabase.migrate.currentVersion();
+    console.warn(`\tcurrent version: ${currentVersion}`);
+}
+
+module.exports = {
+    main,
+    setup
+}
