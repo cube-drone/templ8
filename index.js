@@ -52,11 +52,10 @@ async function main({nodeEnv, envPort, cookieSecret, redisUrl, postgresConnectio
         let pong = await redis.get("ponk")
         assert.strictEqual(pong, "toots ahoy")
 
-        let record = await sqlDatabase('table_1').insert({
+        await sqlDatabase('table_1').insert({
             id: crypto.randomUUID(),
             name: "toots ahoy"
         })
-        console.warn(record);
         res.send(":)")
     })
 

@@ -47,7 +47,7 @@ const cleanTest = async () => {
     await run("docker-compose down")
     await run("docker-compose up -d")
     await setup()
-    let proc = runBg("node index.js")
+    let proc = runBg("node run.js")
 
     let success = false
     let messages = []
@@ -86,6 +86,9 @@ const ci_test = async () => {
     if(!success){
         console.error("Tests failed, not deploying")
         return process.exit(1)
+    }
+    else{
+        return process.exit(0)
     }
 }
 desc("Run the test suite from clean")
