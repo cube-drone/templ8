@@ -39,6 +39,8 @@ jobs:
       run: jake ci_test
     - name: "Set NPM version"
       run: npm version 1.0.`git rev-list --count main`
+    - name: "NPM login?"
+      run: npm set //npm.pkg.github.com/:_authToken $GITHUB_TOKEN
     - name: "Deploy to fake NPM"
       run: npm publish
       env:
