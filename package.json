@@ -1,5 +1,5 @@
 {
-  "name": "templ8",
+  "name": "@cube-drone/templ8",
   "version": "1.0.0",
   "description": "It's a node application, darn tootin",
   "main": "index.js",
