@@ -13,12 +13,11 @@ const postgresConnectionString = process.env.TEMPL8_POSTGRES_URL || process.env.
 // take arguments and do various tasks:
 // * setup the database
 // * start the server
-setup({nodeEnv, envPort, redisUrl, postgresConnectionString}).catch((err) => {
-    console.error(err)
-    process.exit(1)
-})
-
-main({nodeEnv, envPort, cookieSecret, redisUrl, postgresConnectionString}).catch((err) => {
-    console.error(err)
-    process.exit(1)
-})
+setup({nodeEnv, envPort, redisUrl, postgresConnectionString})
+    .then(()=>{
+        main({nodeEnv, envPort, cookieSecret, redisUrl, postgresConnectionString})
+    })
+    .catch((err) => {
+        console.error(err)
+        process.exit(1)
+    })
