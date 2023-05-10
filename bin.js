@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-let { main } = require('./index')
+let { main, setup } = require('./index')
 
 const nodeEnv = process.env.NODE_ENV || "development";
 const envPort = process.env.TEMPL8_PORT || 9494;
