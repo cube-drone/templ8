@@ -78,8 +78,13 @@ async function setup({nodeEnv, envPort, redisUrl, postgresConnectionString}){
     let sqlDatabase = await connectAndSetup({postgresConnectionString})
 
     console.log(`\trunning migrations...`);
+    
+    let thisPath = require.resolve("./knexfile.js");
+    // join thispath and ./migrations
+    let migrationsPath = require('path').join(thisPath, "migrations")
+
     await sqlDatabase.migrate.latest({
-        directory: './migrations',
+        directory: migrationsPath,
     })
     let currentVersion = await sqlDatabase.migrate.currentVersion();
     console.warn(`\tcurrent version: ${currentVersion}`);
