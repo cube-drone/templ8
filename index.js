@@ -80,7 +80,7 @@ async function setup({nodeEnv, envPort, redisUrl, postgresConnectionString}){
     console.log(`\trunning migrations...`);
     
     let thisPath = require.resolve("./knexfile.js");
-    thisPath = this.path.substring(0, thisPath.length - "knexfile.js".length)
+    thisPath = thisPath.substring(0, thisPath.length - "knexfile.js".length)
     // join thispath and ./migrations
     let migrationsPath = require('path').join(thisPath, "migrations")
 
