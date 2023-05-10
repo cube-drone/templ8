@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 let { main } = require('./index')
 
 const nodeEnv = process.env.NODE_ENV || "development";
@@ -9,9 +11,12 @@ const postgresConnectionString = process.env.TEMPL8_POSTGRES_URL || process.env.
     "postgres://postgres:example@localhost:5432/templ8";
 
 // take arguments and do various tasks:
-// * start the server
 // * setup the database
-// * run tests
+// * start the server
+setup({nodeEnv, envPort, redisUrl, postgresConnectionString}).catch((err) => {
+    console.error(err)
+    process.exit(1)
+})
 
 main({nodeEnv, envPort, cookieSecret, redisUrl, postgresConnectionString}).catch((err) => {
     console.error(err)
