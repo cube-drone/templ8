@@ -3,8 +3,8 @@
 let { main, setup } = require('./index')
 
 const nodeEnv = process.env.NODE_ENV || "development";
-const envPort = process.env.TEMPL8_PORT || 9494;
-const cookieSecret = process.env.TEMPL8_SECRET || "toots ahoy";
+const envPort = process.env.TEMPL8_PORT || process.env.PORT || 9494;
+const cookieSecret = process.env.TEMPL8_SECRET || process.env.COOKIE_SECRET || "toots ahoy";
 const redisUrl = process.env.TEMPL8_REDIS_URL || process.env.REDIS_URL || 
     "redis://localhost:6379";
 const postgresConnectionString = process.env.TEMPL8_POSTGRES_URL || process.env.POSTGRES_URL || 
