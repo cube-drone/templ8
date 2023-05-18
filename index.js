@@ -56,7 +56,7 @@ async function main({nodeEnv, envPort, cookieSecret, redisUrl, postgresConnectio
             id: crypto.randomUUID(),
             name: "toots ahoy"
         })
-        res.send(":D")
+        res.send(":)")
     })
 
     app.listen(envPort)
