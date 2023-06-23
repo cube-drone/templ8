@@ -24,7 +24,7 @@ async function main({nodeEnv, envPort, cookieSecret, redisUrl, postgresConnectio
     const sqlDatabase = require('knex')({
         client: 'pg',
         connection: postgresConnectionString
-    });  
+    });
     const redis = new Redis(redisUrl);
 
     let noopMiddleware = async (req, res, next) => {
@@ -59,6 +59,15 @@ async function main({nodeEnv, envPort, cookieSecret, redisUrl, postgresConnectio
         res.send(":)")
     })
 
+    app.get('/env', async function (req, res) {
+        if(nodeEnv === "production"){
+            res.send("production");
+        }
+        else {
+            res.json(process.env);
+        }
+    });
+
     app.listen(envPort)
     console.log(`Listening on port ${envPort}...`)
 }
@@ -78,7 +87,7 @@ async function setup({nodeEnv, envPort, redisUrl, postgresConnectionString}){
     let sqlDatabase = await connectAndSetup({postgresConnectionString})
 
     console.log(`\trunning migrations...`);
-    
+
     let thisPath = require.resolve("./knexfile.js");
     thisPath = thisPath.substring(0, thisPath.length - "knexfile.js".length)
     // join thispath and ./migrations
